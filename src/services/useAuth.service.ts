@@ -1,10 +1,5 @@
 import { useState, useEffect } from 'react';
-
-interface Account {
-  id: string;
-  name: string;
-  email: string;
-}
+import { Account } from '../types/account.type';
 
 /**
  * A custom React hook that handles user authentication.
@@ -20,7 +15,9 @@ interface Account {
  * The hook uses a mock authentication process that simulates a 1.5-second delay before returning a mock `Account` object.
  */
 
-export const useAuth = () => {
+export const useAuth = ({
+  simulateLoggedIn,
+}: { simulateLoggedIn?: boolean } = {}) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [account, setAccount] = useState<Account | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +33,10 @@ export const useAuth = () => {
           name: 'John Doe',
           email: 'john.doe@example.com'
         };
+
+        if (!simulateLoggedIn) {
+          throw new Error("Authentication failed");
+        }
 
         setAccount(mockAccount);
         setIsSuccess(true);

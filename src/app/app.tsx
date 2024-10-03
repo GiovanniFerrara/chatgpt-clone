@@ -7,7 +7,9 @@ const AuthenticatedApp = lazy(() => import("./authenticated-app"));
 const UnauthenticatedApp = lazy(() => import("./public-app"));
 
 function App() {
-  const { isLoading, account, error, isSuccess } = useAuth();
+  const { isLoading, account, error, isSuccess } = useAuth({
+    simulateLoggedIn: true,
+  });
 
   useToaster({
     messages: [
