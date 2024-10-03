@@ -17,7 +17,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ArrowUp from "@mui/icons-material/ArrowUpward";
 import { styled, useTheme, Theme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import { OpenInNew, ViewSidebar } from "@mui/icons-material";
 
 const drawerWidth = 240;
 interface Message {
@@ -65,7 +67,7 @@ const InputArea = styled("div")(({ theme }: { theme: Theme }) => ({
   alignItems: "center",
   borderRadius: "26px",
   backgroundColor: theme.palette.primary.light,
-  marginBottom: theme.spacing(2),
+  margin: "auto",
 }));
 
 const MessageInput = styled(InputBase)(({ theme }: { theme: Theme }) => ({
@@ -112,6 +114,7 @@ const Dashboard: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, sender: "user", text: "What is the weather like today?" },
+    { id: 2, sender: "bot", text: "Great!" },
   ]);
   const [messageText, setMessageText] = useState("");
 
@@ -143,24 +146,18 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const NewChatButton = styled(Button)(({ theme }) => ({
-    width: "90%",
-    margin: theme.spacing(1, "auto"),
+  const NewChatBox = styled(Box)(({ theme }) => ({
+    width: "100%",
     display: "flex",
-    marginTop: theme.spacing(2),
-    justifyContent: "flex-start",
-    padding: theme.spacing(1, 2),
+    justifyContent: "space-between",
     color: theme.palette.text.primary,
-    "&:hover": {
-      backgroundColor: theme.palette.action.hover,
-    },
   }));
 
   const Thread = styled(ListItem)(({ theme }) => ({
     margin: theme.spacing(1, "auto"),
     display: "flex",
     justifyContent: "flex-start",
-    padding: theme.spacing(1, 2),
+    padding: theme.spacing(1),
     color: theme.palette.text.primary,
   }));
 
@@ -181,9 +178,37 @@ const Dashboard: React.FC = () => {
     marginRight: theme.spacing(1),
   }));
 
+  // const IconButton = styled(IconButton)(({ theme }) => ({
+  //   color: theme.palette.text.secondary,
+  // }));
+
   const drawerContent = (
     <Box>
-      <NewChatButton startIcon={<AddIcon />}>New chat</NewChatButton>
+      {isMobile && (
+        <IconButton
+          onClick={handleDrawerToggle}
+          sx={{ position: "absolute", right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      )}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: 2,
+        }}
+      >
+        <NewChatBox>
+          <IconButton>
+            <OpenInNew />
+          </IconButton>
+          <IconButton onClick={handleDrawerToggle}>
+            <ViewSidebar />
+          </IconButton>
+        </NewChatBox>
+      </Box>
       <List>
         <Thread>
           <Typography
@@ -209,17 +234,32 @@ const Dashboard: React.FC = () => {
           <Toolbar>
             <IconButton
               color="inherit"
-              aria-label="open navigation drawer"
+              aria-label="toggle navigation drawer"
               edge="start"
               onClick={handleDrawerToggle}
               sx={{ mr: 2 }}
             >
-              <MenuIcon />
+              {mobileOpen ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
 
-            <Typography variant="h6" noWrap component="div">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
               Chat PTG
             </Typography>
+
+            <IconButton
+              color="inherit"
+              aria-label="start new chat"
+              edge="end"
+              //TODO add new chat
+              onClick={() => {}}
+            >
+              <ChatBubbleOutlineIcon />
+            </IconButton>
           </Toolbar>
         </AppBarStyled>
       )}
@@ -248,12 +288,10 @@ const Dashboard: React.FC = () => {
         </Drawer>
       )}
 
-      {/* Main Content */}
       <Main>
         <HeaderSpacer />
         <ScrollableArea>
           <Container maxWidth="md">
-            {/* Messages */}
             <MessagesContainer>
               {messages.map((message) => (
                 <MessageContainer
@@ -268,7 +306,7 @@ const Dashboard: React.FC = () => {
             </MessagesContainer>
           </Container>
         </ScrollableArea>
-        <Container maxWidth="md">
+        <Container sx={{ marginBottom: 2 }} maxWidth="md">
           <InputArea>
             <MessageInput
               placeholder="Type your message..."
@@ -292,4 +330,5 @@ const Dashboard: React.FC = () => {
     </Box>
   );
 };
+
 export default Dashboard;

@@ -97,6 +97,9 @@ const darkTheme = createTheme({
       primary: '#E0E0E0', 
       secondary: '#B0B0B0',
     },
+    success: {
+      main: '#B4B4B4',
+    },
     divider: grey[700],
   },
 });
