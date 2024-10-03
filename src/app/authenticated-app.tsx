@@ -8,8 +8,8 @@ const AuthenticatedApp: FC = () => {
     <div>
       <Routes>
         {[...routesConfig.privateRoutes, ...routesConfig.publicRoutes].map(
-          (config) => (
-            <Route key={`${config.path}`} {...config} />
+          ({ path, Component }) => (
+            <Route key={path} path={path} element={<Component />} />
           )
         )}
         <Route path="*" Component={NotFoundPage} />

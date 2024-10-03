@@ -9,17 +9,17 @@ export const routesConfig = {
     {
       path: "/",
       exact: true,
-      component: Home
+      Component: Home
     },
     {
       path: "/signup",
       exact: true,
-      component: Signup,
+      Component: Signup,
     },
     {
       path: "/login",
       exact: true,
-      component: Login,
+      Component: Login,
     },
   ],
   privateRoutes: [
