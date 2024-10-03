@@ -1,0 +1,57 @@
+import { useState, useEffect } from 'react';
+
+interface Account {
+  id: string;
+  name: string;
+  email: string;
+}
+
+/**
+ * A custom React hook that handles user authentication.
+ *
+ * This hook provides a simple interface for authenticating a user and managing the
+ * authentication state. It returns an object with the following properties:
+ *
+ * - `isLoading`: a boolean indicating whether the authentication process is in progress.
+ * - `account`: an `Account` object representing the authenticated user, or `null` if the user is not authenticated.
+ * - `error`: a string containing an error message if the authentication process failed, or `null` if there was no error.
+ * - `isSuccess`: a boolean indicating whether the authentication process was successful.
+ *
+ * The hook uses a mock authentication process that simulates a 1.5-second delay before returning a mock `Account` object.
+ */
+
+export const useAuth = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [account, setAccount] = useState<Account | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+
+  useEffect(() => {
+    const authenticateUser = async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const mockAccount: Account = {
+          id: '123456',
+          name: 'John Doe',
+          email: 'john.doe@example.com'
+        };
+
+        setAccount(mockAccount);
+        setIsSuccess(true);
+        setError(null);
+      } catch (err) {
+        console.error(err);
+        setError('Authentication failed');
+        setIsSuccess(false);
+        setAccount(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    authenticateUser();
+  }, []);
+
+  return { isLoading, account, error, isSuccess };
+};
