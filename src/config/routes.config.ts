@@ -28,5 +28,10 @@ export const routesConfig = {
       exact: true,
       Component: Dashboard
     },
+    {
+      path: "/dashboard/:conversationId",
+      exact: true,
+      Component: Dashboard
+    },
   ]
 }

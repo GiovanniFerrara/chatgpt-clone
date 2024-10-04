@@ -6,7 +6,7 @@ interface UseAiChatCompletionReturn {
   isLoading: boolean;
   error: string | null;
   isResponseComplete: boolean;
-  sendMessages: (messages: Message[]) => void;
+  sendMessages: (conversationId: string, messages: Message[]) => void;
 }
 
 export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
@@ -16,7 +16,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
 
-  const sendMessages = (messages: Message[]) => {
+  const sendMessages = (conversationId:string, messages: Message[]) => {
     // Abort any ongoing request
     if (controllerRef.current) {
       controllerRef.current.abort();
@@ -33,7 +33,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify({ messages, conversationId }),
       signal: controllerRef.current.signal,
     })
       .then((res) => {

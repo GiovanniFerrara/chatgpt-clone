@@ -10,17 +10,50 @@ import { Main, HeaderSpacer, ScrollableArea } from "./dashboard.page.styles";
 import { Message } from "../../types/message";
 import { useAiChatCompletion } from "../../services/use-ai-chat-completion.service";
 import useToaster from "../../hooks/use-toaster.ts/use-toaster";
+import { useCreateConversation } from "../../services/use-create-conversation.service";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const { sendMessages, response, error, isLoading } = useAiChatCompletion();
-  // try to disconnect the server to see how it works
+
+  const { conversationId } = useParams();
+
+  const navigate = useNavigate();
+
+  const {
+    run: createNewConversation,
+    data,
+    status,
+    isSuccess: isCreateConversationSuccess,
+    isError: isCreateConversationError,
+    error: createConversationError,
+  } = useCreateConversation();
+
+  useEffect(() => {
+    if (!conversationId && status === "idle") {
+      createNewConversation();
+    }
+  }, [conversationId, createNewConversation, status]);
+
+  useEffect(() => {
+    if (isCreateConversationSuccess && data) {
+      navigate(`/dashboard/${data.id}`);
+    }
+  }, [data, isCreateConversationSuccess, navigate]);
+
   useToaster({
     messages: [
       {
         condition: !!error,
         message: error,
+        type: "error",
+      },
+      {
+        condition: isCreateConversationError,
+        message: createConversationError?.message,
         type: "error",
       },
     ],
@@ -76,12 +109,13 @@ const Dashboard: React.FC = () => {
       { role: "user", content: messageText.trim() },
     ];
 
-    sendMessages(chatMessages as Message[]);
-
-    setMessageText("");
+    if (data?.id) {
+      sendMessages(data?.id, chatMessages as Message[]);
+      setMessageText("");
+    }
   };
 
-  // for accessibility
+  // accessibility ++
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

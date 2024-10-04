@@ -4,6 +4,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { AppBarStyled } from "./app-bar.styles";
 import NewChatIcon from "../../../assets/new-chat-icon.svg?react";
+import { useNavigate } from "react-router-dom";
 
 interface AppBarComponentProps {
   isDrawerOpen: boolean;
@@ -15,6 +16,8 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
   handleDrawerToggle,
 }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
   return (
     <AppBarStyled position="fixed">
       <Toolbar>
@@ -31,8 +34,8 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Chat GPT
         </Typography>
-        {/* add new chat handler */}
-        <IconButton onClick={() => {}}>
+
+        <IconButton onClick={() => navigate("/dashboard")}>
           <NewChatIcon color={theme.palette.secondary.light} />
         </IconButton>
       </Toolbar>
