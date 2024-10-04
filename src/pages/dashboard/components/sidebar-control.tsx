@@ -27,11 +27,11 @@ const SidebarControl: React.FC<SidebarControlProps> = ({
       }}
     >
       <NewChatBox>
-        <IconButton>
-          <NewChatIcon color={theme.palette.secondary.light} />
-        </IconButton>
         <IconButton onClick={handleDrawerToggle}>
           <SidebarIcon color={theme.palette.secondary.light} />
+        </IconButton>
+        <IconButton>
+          <NewChatIcon color={theme.palette.secondary.light} />
         </IconButton>
       </NewChatBox>
     </Box>

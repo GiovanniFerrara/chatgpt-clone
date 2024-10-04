@@ -32,7 +32,7 @@ const MessageInputArea: React.FC<MessageInputAreaProps> = ({
         />
       </InputArea>
       <SendButton
-        color="secondary"
+        color="primary"
         variant="contained"
         onClick={handleSendMessage}
         aria-label="send message"

@@ -50,37 +50,91 @@ const themeCommon: ThemeOptions = {
   },
 }
 
+
 const lightTheme = createTheme({
   ...themeCommon,
   palette: {
     mode: 'light',
     primary: {
-      main: '#10A37F', 
+      main: '#D7D7D7',
+      light: '#F4F4F4',
     },
     secondary: {
-      main: '#0F4C75', 
+      main: '#3c3c50',
+      light: '#B4B4B4',
     },
     action: {
-      hover: "#2F2F2F",
+      hover: '#F7F7F8',
+      selected: '#ECECF1',
+     
     },
     background: {
-      default: '#F5F5F5', 
-      paper: '#FFFFFF', 
+      default: '#FFFFFF',
+      paper: '#F7F7F8',
     },
     text: {
-      primary: '#333333', 
-      secondary: '#555555', 
+      primary: '#000000',
+      secondary: '#6E6E80',
     },
-    divider: grey[300],
+    success: {
+      main: '#4caf50',
+      light: '#80e27e',
+      dark: '#087f23',
+      contrastText: '#ffffff',
+    },
+    divider: '#E5E5E5',
+    grey: {
+      100: '#F7F7F8',
+      200: '#ECECF1',
+     
+    },
+   
+    error: {
+      main: '#f44336',
+      light: '#e57373',
+      dark: '#d32f2f',
+      contrastText: '#ffffff',
+    },
+    warning: {
+      main: '#ff9800',
+      light: '#ffb74d',
+      dark: '#f57c00',
+      contrastText: '#ffffff',
+    },
+    info: {
+      main: '#2196f3',
+      light: '#64b5f6',
+      dark: '#1976d2',
+      contrastText: '#ffffff',
+    },
+  },
+  typography: {
+   
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+   
+  },
+  components: {
+   
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+   
   },
 });
+
+export default lightTheme;
+
 
 const darkTheme = createTheme({
   ...themeCommon,
   palette: {
     mode: 'dark',
     primary: {
-      main: '#10A37F', 
+      main: '#676767',
       light: "#2F2F2F",
     },
     secondary: {
