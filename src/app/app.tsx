@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import useToaster from "../hooks/use-toaster.ts/use-toaster";
-import { useAuth } from "../services/useAuth.service";
+import { useAuth } from "../services/use-auth.service";
 import { FullPageLoader } from "../components";
 
 const AuthenticatedApp = lazy(() => import("./authenticated-app"));

@@ -19,7 +19,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   return (
     <MessageContainer isUser={isUser}>
       <MessageBubbleStyled isUser={isUser}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex" }}>
           {!isUser && (
             <LogoBox>
               <LogoSmall height={theme.spacing(2)} width={theme.spacing(2)} />

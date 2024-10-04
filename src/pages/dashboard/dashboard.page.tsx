@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, KeyboardEvent } from "react";
+import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from "react";
 import { Box, Container, useTheme, useMediaQuery } from "@mui/material";
 
 import AppBarComponent from "./components/app-bar";
@@ -8,17 +8,35 @@ import MessageInputArea from "./components/message-input-area";
 import SidebarControl from "./components/sidebar-control";
 import { Main, HeaderSpacer, ScrollableArea } from "./dashboard.page.styles";
 import { Message } from "../../types/message";
+import { useAiChatCompletion } from "../../services/use-ai-chat-completion.service";
+import useToaster from "../../hooks/use-toaster.ts/use-toaster";
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { sendPrompt, response, error } = useAiChatCompletion();
+  console.log({ error });
 
+  useToaster({
+    messages: [
+      {
+        condition: !!error,
+        message: error,
+        type: "error",
+      },
+    ],
+  });
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, role: "user", content: "What is the weather like today?" },
     { id: 2, role: "assistant", content: "Great!" },
   ]);
+
   const [messageText, setMessageText] = useState("");
+  const [assistantMessageId, setAssistantMessageId] = useState<number | null>(
+    null
+  );
 
   const handleDrawerToggle = () => {
     setIsDrawerOpen((prevIsOpenState) => !prevIsOpenState);
@@ -31,13 +49,33 @@ const Dashboard: React.FC = () => {
   const handleSendMessage = () => {
     if (messageText.trim() === "") return;
 
-    const newMessage: Message = {
+    const userMessage: Message = {
       id: messages.length + 1,
       role: "user",
       content: messageText.trim(),
     };
 
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    // Assistant message with empty content
+    const assistantMessage: Message = {
+      id: messages.length + 2,
+      role: "assistant",
+      content: "",
+    };
+
+    // Update messages state
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      userMessage,
+      assistantMessage,
+    ]);
+
+    // Store assistant message ID for updates
+    setAssistantMessageId(assistantMessage.id);
+
+    // Send prompt
+    sendPrompt(messageText);
+
+    // Clear input
     setMessageText("");
   };
 
@@ -47,6 +85,17 @@ const Dashboard: React.FC = () => {
       handleSendMessage();
     }
   };
+
+  useEffect(() => {
+    if (assistantMessageId !== null && response) {
+      // Update the content of the assistant message
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === assistantMessageId ? { ...msg, content: response } : msg
+        )
+      );
+    }
+  }, [response, assistantMessageId]);
 
   return (
     <Box sx={{ display: "flex" }}>

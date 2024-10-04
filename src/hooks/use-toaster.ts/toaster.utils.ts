@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { ToasterMessage, ToasterMessageType, ToasterState } from "./toaster.types";
 import { pushByType } from "./use-toaster";
 
@@ -7,15 +6,6 @@ import { pushByType } from "./use-toaster";
 export const pushErrorToast = (message?: ToasterMessageType) => {
   return toast.error(
     message || "Something went wrong, please try again later",
-    {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    }
   );
 };
 
@@ -31,7 +21,8 @@ export function pushMessagesToToaster(messages: ToasterMessage[]) {
     return;
   }
   messages.forEach((message) => {
-    pushByType[message.type](message.message);
+    const pushFunction = pushByType[message.type];
+    pushFunction(message.message);
   });
 }
 

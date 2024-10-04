@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Account } from '../types/account.type';
+import { useState, useEffect, useCallback } from "react";
+import { Account } from "../types/account.type";
 
 /**
  * A custom React hook that handles user authentication.
@@ -23,36 +23,36 @@ export const useAuth = ({
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
-  useEffect(() => {
-    const authenticateUser = async () => {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+  const authenticateUser = useCallback(async () => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        const mockAccount: Account = {
-          id: '123456',
-          name: 'John Doe',
-          email: 'john.doe@example.com'
-        };
+      const mockAccount: Account = {
+        id: "123456",
+        name: "John Doe",
+        email: "john.doe@example.com",
+      };
 
-        if (!simulateLoggedIn) {
-          throw new Error("Authentication failed");
-        }
-
-        setAccount(mockAccount);
-        setIsSuccess(true);
-        setError(null);
-      } catch (err) {
-        console.error(err);
-        setError('Authentication failed');
-        setIsSuccess(false);
-        setAccount(null);
-      } finally {
-        setIsLoading(false);
+      if (!simulateLoggedIn) {
+        throw new Error("Authentication failed");
       }
-    };
 
+      setAccount(mockAccount);
+      setIsSuccess(true);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError("Authentication failed");
+      setIsSuccess(false);
+      setAccount(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [simulateLoggedIn]);
+
+  useEffect(() => {
     authenticateUser();
-  }, []);
+  }, [authenticateUser, simulateLoggedIn]);
 
   return { isLoading, account, error, isSuccess };
 };

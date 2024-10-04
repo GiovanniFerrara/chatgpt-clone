@@ -23,6 +23,7 @@ export const MessageBubbleStyled = styled(Box, {
 export const LogoBox = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
+  height: theme.spacing(4),
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: "50%",
   padding: theme.spacing(0.8),
