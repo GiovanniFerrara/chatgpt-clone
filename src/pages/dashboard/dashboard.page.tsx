@@ -12,14 +12,19 @@ import {
   Button,
   ListItemButton,
   Container,
+  styled,
+  useTheme,
+  Theme,
+  BoxProps,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ArrowUp from "@mui/icons-material/ArrowUpward";
-import { styled, useTheme, Theme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import CloseIcon from "@mui/icons-material/Close";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import { OpenInNew, ViewSidebar } from "@mui/icons-material";
+import LogoSmall from "../../assets/logo-small.svg?react";
+import NewChatIcon from "../../assets/new-chat-icon.svg?react";
+import SidebarIcon from "../../assets/sidebar-icon.svg?react";
 
 const drawerWidth = 240;
 interface Message {
@@ -65,7 +70,10 @@ const InputArea = styled("div")(({ theme }: { theme: Theme }) => ({
   padding: theme.spacing(1),
   display: "flex",
   alignItems: "center",
+  maxHeight: theme.spacing(12),
+  overflowY: "auto",
   borderRadius: "26px",
+  position: "relative",
   backgroundColor: theme.palette.primary.light,
   margin: "auto",
 }));
@@ -86,6 +94,9 @@ const SendButton = styled(Button)(({ theme }: { theme: Theme }) => ({
   padding: theme.spacing(1),
   borderRadius: "50%",
   backgroundColor: "#676767",
+  position: "absolute",
+  bottom: theme.spacing(1),
+  right: theme.spacing(4),
 }));
 
 const MessageContainer = styled(Box, {
@@ -110,8 +121,8 @@ const MessageBubble = styled(Box, {
 const Dashboard: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, sender: "user", text: "What is the weather like today?" },
     { id: 2, sender: "bot", text: "Great!" },
@@ -119,7 +130,7 @@ const Dashboard: React.FC = () => {
   const [messageText, setMessageText] = useState("");
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+    setIsDrawerOpen((prevIsOpenState) => !prevIsOpenState);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -178,9 +189,38 @@ const Dashboard: React.FC = () => {
     marginRight: theme.spacing(1),
   }));
 
-  // const IconButton = styled(IconButton)(({ theme }) => ({
-  //   color: theme.palette.text.secondary,
-  // }));
+  const LogoBox = styled(Box)<BoxProps>(({ theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: "50%",
+    padding: theme.spacing(0.8),
+    marginRight: theme.spacing(1),
+  }));
+
+  const SidebarControl = ({ tighten }: { tighten?: boolean }) => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: 2,
+          width: tighten ? theme.spacing(5) : "100%",
+          position: tighten ? "absolute" : "relative",
+        }}
+      >
+        <NewChatBox>
+          <IconButton>
+            <NewChatIcon color={theme.palette.secondary.light} />
+          </IconButton>
+          <IconButton onClick={handleDrawerToggle}>
+            <SidebarIcon color={theme.palette.secondary.light} />
+          </IconButton>
+        </NewChatBox>
+      </Box>
+    );
+  };
 
   const drawerContent = (
     <Box>
@@ -192,23 +232,7 @@ const Dashboard: React.FC = () => {
           <CloseIcon />
         </IconButton>
       )}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: 2,
-        }}
-      >
-        <NewChatBox>
-          <IconButton>
-            <OpenInNew />
-          </IconButton>
-          <IconButton onClick={handleDrawerToggle}>
-            <ViewSidebar />
-          </IconButton>
-        </NewChatBox>
-      </Box>
+      <SidebarControl />
       <List>
         <Thread>
           <Typography
@@ -239,7 +263,7 @@ const Dashboard: React.FC = () => {
               onClick={handleDrawerToggle}
               sx={{ mr: 2 }}
             >
-              {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+              {isDrawerOpen ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
 
             <Typography
@@ -248,7 +272,7 @@ const Dashboard: React.FC = () => {
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Chat PTG
+              Chat GPT
             </Typography>
 
             <IconButton
@@ -266,7 +290,7 @@ const Dashboard: React.FC = () => {
 
       {/* Drawer for Desktop */}
       {!isMobile && (
-        <DrawerStyled variant="permanent" open>
+        <DrawerStyled variant="persistent" open={!isDrawerOpen}>
           {drawerContent}
         </DrawerStyled>
       )}
@@ -275,7 +299,7 @@ const Dashboard: React.FC = () => {
       {isMobile && (
         <Drawer
           variant="temporary"
-          open={mobileOpen}
+          open={isDrawerOpen}
           onClose={handleDrawerToggle}
           ModalProps={{}}
           sx={{
@@ -288,6 +312,7 @@ const Dashboard: React.FC = () => {
         </Drawer>
       )}
 
+      {isDrawerOpen && <SidebarControl tighten />}
       <Main>
         <HeaderSpacer />
         <ScrollableArea>
@@ -299,14 +324,24 @@ const Dashboard: React.FC = () => {
                   isUser={message.sender === "user"}
                 >
                   <MessageBubble isUser={message.sender === "user"}>
-                    <Typography variant="body1">{message.text}</Typography>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      {message.sender !== "user" && (
+                        <LogoBox>
+                          <LogoSmall
+                            height={theme.spacing(2)}
+                            width={theme.spacing(2)}
+                          />
+                        </LogoBox>
+                      )}
+                      <Typography variant="body1">{message.text}</Typography>
+                    </Box>
                   </MessageBubble>
                 </MessageContainer>
               ))}
             </MessagesContainer>
           </Container>
         </ScrollableArea>
-        <Container sx={{ marginBottom: 2 }} maxWidth="md">
+        <Container sx={{ marginBottom: 2, position: "relative" }} maxWidth="md">
           <InputArea>
             <MessageInput
               placeholder="Type your message..."
@@ -316,15 +351,15 @@ const Dashboard: React.FC = () => {
               multiline
               inputProps={{ "aria-label": "message input" }}
             />
-            <SendButton
-              color="secondary"
-              variant="contained"
-              onClick={handleSendMessage}
-              aria-label="send message"
-            >
-              <ArrowUp color={"action"} />
-            </SendButton>
           </InputArea>
+          <SendButton
+            color="secondary"
+            variant="contained"
+            onClick={handleSendMessage}
+            aria-label="send message"
+          >
+            <ArrowUp color={"action"} />
+          </SendButton>
         </Container>
       </Main>
     </Box>

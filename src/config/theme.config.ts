@@ -85,6 +85,7 @@ const darkTheme = createTheme({
     },
     secondary: {
       main: '#3c3c50', 
+      light: "#B4B4B4",
     },
     action: {
       hover: "#2F2F2F",
