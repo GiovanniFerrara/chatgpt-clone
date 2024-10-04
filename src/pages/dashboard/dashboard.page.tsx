@@ -19,30 +19,18 @@ const Dashboard: React.FC = () => {
 
   const { sendMessages, response, error, isLoading } = useAiChatCompletion();
 
-  const { conversationId } = useParams();
+  const { conversationId: paramConversationId } = useParams();
+  const [conversationId, setConversationId] = useState<string | undefined>(
+    paramConversationId
+  );
 
   const navigate = useNavigate();
 
   const {
     run: createNewConversation,
     data,
-    status,
-    isSuccess: isCreateConversationSuccess,
-    isError: isCreateConversationError,
     error: createConversationError,
   } = useCreateConversation();
-
-  useEffect(() => {
-    if (!conversationId && status === "idle") {
-      createNewConversation();
-    }
-  }, [conversationId, createNewConversation, status]);
-
-  useEffect(() => {
-    if (isCreateConversationSuccess && data) {
-      navigate(`/dashboard/${data.id}`);
-    }
-  }, [data, isCreateConversationSuccess, navigate]);
 
   useToaster({
     messages: [
@@ -52,7 +40,7 @@ const Dashboard: React.FC = () => {
         type: "error",
       },
       {
-        condition: isCreateConversationError,
+        condition: !!createConversationError,
         message: createConversationError?.message,
         type: "error",
       },
@@ -67,9 +55,17 @@ const Dashboard: React.FC = () => {
     null
   );
 
+  const [pendingMessage, setPendingMessage] = useState<Message | null>(null);
+
   const handleDrawerToggle = () => {
     setIsDrawerOpen((prevIsOpenState) => !prevIsOpenState);
   };
+
+  useEffect(() => {
+    if (!paramConversationId) {
+      setMessages([]);
+    }
+  }, [paramConversationId]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessageText(e.target.value);
@@ -79,13 +75,11 @@ const Dashboard: React.FC = () => {
     if (messageText.trim() === "") return;
 
     const userMessage: Message = {
-      // this generates a unique ID for the user message, just to keep track of the order
       id: messages.length + 1,
       role: "user",
       content: messageText.trim(),
     };
 
-    // I provide an empty message in order to have the assistant message appear after the user message
     const assistantMessage: Message = {
       id: messages.length + 2,
       role: "assistant",
@@ -100,28 +94,53 @@ const Dashboard: React.FC = () => {
 
     setAssistantMessageId(assistantMessage.id);
 
-    const chatMessages = [
-      ...messages.map((msg) => ({
-        role: msg.role,
-        content: msg.content,
-        id: msg.id,
-      })),
-      { role: "user", content: messageText.trim() },
-    ];
+    if (!conversationId) {
+      createNewConversation();
 
-    if (data?.id) {
-      sendMessages(data?.id, chatMessages as Message[]);
-      setMessageText("");
+      setPendingMessage(userMessage);
+    } else {
+      const chatMessages = [
+        ...messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+          id: msg.id,
+        })),
+        { role: "user", content: messageText.trim() },
+      ];
+
+      sendMessages(conversationId, chatMessages as Message[]);
     }
+
+    setMessageText("");
   };
 
-  // accessibility ++
+  // Accessibility enhancement
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
+
+  useEffect(() => {
+    if (data && data.id && !conversationId) {
+      setConversationId(data.id);
+      navigate(`/dashboard/${data.id}`);
+
+      if (pendingMessage) {
+        const chatMessages = [
+          ...messages.map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+            id: msg.id,
+          })),
+        ];
+
+        sendMessages(data.id, chatMessages as Message[]);
+        setPendingMessage(null);
+      }
+    }
+  }, [data, conversationId, messages, pendingMessage, navigate, sendMessages]);
 
   useEffect(() => {
     if (assistantMessageId !== null && response) {
