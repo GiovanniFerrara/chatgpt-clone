@@ -11,6 +11,7 @@ interface MessageInputAreaProps {
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleKeyPress: (e: KeyboardEvent<HTMLInputElement>) => void;
   handleSendMessage: () => void;
+  disabled: boolean;
 }
 
 const MessageInputArea: React.FC<MessageInputAreaProps> = ({
@@ -18,6 +19,7 @@ const MessageInputArea: React.FC<MessageInputAreaProps> = ({
   handleInputChange,
   handleKeyPress,
   handleSendMessage,
+  disabled,
 }) => {
   return (
     <>
@@ -33,6 +35,7 @@ const MessageInputArea: React.FC<MessageInputAreaProps> = ({
       </InputArea>
       <SendButton
         color="primary"
+        disabled={disabled}
         variant="contained"
         onClick={handleSendMessage}
         aria-label="send message"

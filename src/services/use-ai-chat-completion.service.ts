@@ -1,21 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
+import { Message } from '../types/message';
 
-interface UseGPT4Return {
+interface UseAiChatCompletionReturn {
   response: string;
   isLoading: boolean;
   error: string | null;
-  isResponseComplete: boolean; // Add this
-  sendPrompt: (prompt: string) => void;
+  isResponseComplete: boolean;
+  sendMessages: (messages: Message[]) => void;
 }
 
-export const useAiChatCompletion = (): UseGPT4Return => {
+export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const [response, setResponse] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false); // Add this
+  const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
 
-  const sendPrompt = (prompt: string) => {
+  const sendMessages = (messages: Message[]) => {
     // Abort any ongoing request
     if (controllerRef.current) {
       controllerRef.current.abort();
@@ -25,15 +26,14 @@ export const useAiChatCompletion = (): UseGPT4Return => {
     setResponse('');
     setIsLoading(true);
     setError(null);
-    setIsResponseComplete(false); // Reset response complete state
+    setIsResponseComplete(false);
 
     fetch('http://localhost:5120/api/chat-completion-stream', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `${import.meta.env.VITE_OPENAI_API_KEY}`,
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ messages }),
       signal: controllerRef.current.signal,
     })
       .then((res) => {
@@ -65,7 +65,7 @@ export const useAiChatCompletion = (): UseGPT4Return => {
                       if (data === '[DONE]') {
                         controller.close();
                         setIsLoading(false);
-                        setIsResponseComplete(true); // Mark response as complete
+                        setIsResponseComplete(true);
                         return;
                       }
                       try {
@@ -81,7 +81,7 @@ export const useAiChatCompletion = (): UseGPT4Return => {
                 }
                 controller.close();
                 setIsLoading(false);
-                setIsResponseComplete(true); // Ensure response is marked as complete
+                setIsResponseComplete(true);
               } catch (err: unknown) {
                 if (!(err instanceof Error)) {
                   console.error('Unknown error:', err);
@@ -117,5 +117,5 @@ export const useAiChatCompletion = (): UseGPT4Return => {
     };
   }, []);
 
-  return { response, isLoading, error, isResponseComplete, sendPrompt };
+  return { response, isLoading, error, isResponseComplete, sendMessages };
 };

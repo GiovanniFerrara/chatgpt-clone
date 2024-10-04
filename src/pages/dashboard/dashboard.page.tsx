@@ -14,9 +14,8 @@ import useToaster from "../../hooks/use-toaster.ts/use-toaster";
 const Dashboard: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { sendPrompt, response, error } = useAiChatCompletion();
-  console.log({ error });
-
+  const { sendMessages, response, error, isLoading } = useAiChatCompletion();
+  // try to disconnect the server to see how it works
   useToaster({
     messages: [
       {
@@ -27,11 +26,8 @@ const Dashboard: React.FC = () => {
     ],
   });
 
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, role: "user", content: "What is the weather like today?" },
-    { id: 2, role: "assistant", content: "Great!" },
-  ]);
 
   const [messageText, setMessageText] = useState("");
   const [assistantMessageId, setAssistantMessageId] = useState<number | null>(
@@ -50,35 +46,42 @@ const Dashboard: React.FC = () => {
     if (messageText.trim() === "") return;
 
     const userMessage: Message = {
+      // this generates a unique ID for the user message, just to keep track of the order
       id: messages.length + 1,
       role: "user",
       content: messageText.trim(),
     };
 
-    // Assistant message with empty content
+    // I provide an empty message in order to have the assistant message appear after the user message
     const assistantMessage: Message = {
       id: messages.length + 2,
       role: "assistant",
       content: "",
     };
 
-    // Update messages state
     setMessages((prevMessages) => [
       ...prevMessages,
       userMessage,
       assistantMessage,
     ]);
 
-    // Store assistant message ID for updates
     setAssistantMessageId(assistantMessage.id);
 
-    // Send prompt
-    sendPrompt(messageText);
+    const chatMessages = [
+      ...messages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+        id: msg.id,
+      })),
+      { role: "user", content: messageText.trim() },
+    ];
 
-    // Clear input
+    sendMessages(chatMessages as Message[]);
+
     setMessageText("");
   };
 
+  // for accessibility
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -88,7 +91,6 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (assistantMessageId !== null && response) {
-      // Update the content of the assistant message
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.id === assistantMessageId ? { ...msg, content: response } : msg
@@ -125,6 +127,7 @@ const Dashboard: React.FC = () => {
         </ScrollableArea>
         <Container sx={{ marginBottom: 2, position: "relative" }} maxWidth="md">
           <MessageInputArea
+            disabled={isLoading}
             messageText={messageText}
             handleInputChange={handleInputChange}
             handleKeyPress={handleKeyPress}
