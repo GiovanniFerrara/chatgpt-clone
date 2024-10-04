@@ -15,8 +15,8 @@ const Dashboard: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, sender: "user", text: "What is the weather like today?" },
-    { id: 2, sender: "bot", text: "Great!" },
+    { id: 1, role: "user", content: "What is the weather like today?" },
+    { id: 2, role: "assistant", content: "Great!" },
   ]);
   const [messageText, setMessageText] = useState("");
 
@@ -33,8 +33,8 @@ const Dashboard: React.FC = () => {
 
     const newMessage: Message = {
       id: messages.length + 1,
-      sender: "user",
-      text: messageText.trim(),
+      role: "user",
+      content: messageText.trim(),
     };
 
     setMessages((prevMessages) => [...prevMessages, newMessage]);

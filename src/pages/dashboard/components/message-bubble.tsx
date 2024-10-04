@@ -14,7 +14,7 @@ interface MessageBubbleProps {
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
   const theme = useTheme();
-  const isUser = message.sender === "user";
+  const isUser = message.role === "user";
 
   return (
     <MessageContainer isUser={isUser}>
@@ -25,7 +25,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               <LogoSmall height={theme.spacing(2)} width={theme.spacing(2)} />
             </LogoBox>
           )}
-          <Typography variant="body1">{message.text}</Typography>
+          <Typography variant="body1">{message.content}</Typography>
         </Box>
       </MessageBubbleStyled>
     </MessageContainer>
