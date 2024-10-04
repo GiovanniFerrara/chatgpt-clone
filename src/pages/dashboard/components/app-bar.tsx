@@ -1,9 +1,9 @@
 import React from "react";
-import { Toolbar, IconButton, Typography } from "@mui/material";
+import { Toolbar, IconButton, Typography, useTheme } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import { AppBarStyled } from "./app-bar.styles";
+import NewChatIcon from "../../../assets/new-chat-icon.svg?react";
 
 interface AppBarComponentProps {
   isDrawerOpen: boolean;
@@ -14,6 +14,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
   isDrawerOpen,
   handleDrawerToggle,
 }) => {
+  const theme = useTheme();
   return (
     <AppBarStyled position="fixed">
       <Toolbar>
@@ -30,14 +31,9 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Chat GPT
         </Typography>
-
-        <IconButton
-          color="inherit"
-          aria-label="start new chat"
-          edge="end"
-          onClick={() => {}}
-        >
-          <ChatBubbleOutlineIcon />
+        {/* add new chat handler */}
+        <IconButton onClick={() => {}}>
+          <NewChatIcon color={theme.palette.secondary.light} />
         </IconButton>
       </Toolbar>
     </AppBarStyled>

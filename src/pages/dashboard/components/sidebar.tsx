@@ -1,15 +1,7 @@
 import React from "react";
-import {
-  Drawer,
-  Box,
-  IconButton,
-  List,
-  ListItem,
-  Typography,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Drawer } from "@mui/material";
 import { DrawerStyled } from "./sidebar.styles";
-import SidebarControl from "./sidebar-control";
+import DrawerContent from "./drawer-content";
 
 interface SidebarProps {
   isMobile: boolean;
@@ -24,40 +16,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const drawerWidth = 240;
 
-  const drawerContent = (
-    <Box>
-      {isMobile && (
-        <IconButton
-          onClick={handleDrawerToggle}
-          sx={{ position: "absolute", right: 8, top: 8 }}
-        >
-          <CloseIcon />
-        </IconButton>
-      )}
-      <SidebarControl handleDrawerToggle={handleDrawerToggle} />
-      <List>
-        <ListItem>
-          <Typography
-            variant="overline"
-            sx={{ color: "text.secondary", marginLeft: 2 }}
-          >
-            Today
-          </Typography>
-        </ListItem>
-        <ListItem disablePadding>
-          <Typography variant="body2" sx={{ marginLeft: 2 }}>
-            Chat 1
-          </Typography>
-        </ListItem>
-      </List>
-    </Box>
-  );
-
   return (
     <>
       {!isMobile && (
         <DrawerStyled variant="persistent" open={!isDrawerOpen}>
-          {drawerContent}
+          <DrawerContent
+            isMobile={isMobile}
+            handleDrawerToggle={handleDrawerToggle}
+          />
         </DrawerStyled>
       )}
 
@@ -72,7 +38,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           }}
           aria-label="navigation drawer"
         >
-          {drawerContent}
+          <DrawerContent
+            isMobile={isMobile}
+            handleDrawerToggle={handleDrawerToggle}
+          />
         </Drawer>
       )}
     </>
