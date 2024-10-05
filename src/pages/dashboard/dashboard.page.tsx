@@ -12,25 +12,39 @@ import { useAiChatCompletion } from "../../services/use-ai-chat-completion.servi
 import useToaster from "../../hooks/use-toaster.ts/use-toaster";
 import { useCreateConversation } from "../../services/use-create-conversation.service";
 import { useNavigate, useParams } from "react-router-dom";
+import { useConversation } from "../../services/use-conversation.service";
 
 const Dashboard: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const { sendMessages, response, error, isLoading } = useAiChatCompletion();
-
   const { conversationId: paramConversationId } = useParams();
-  const [conversationId, setConversationId] = useState<string | undefined>(
-    paramConversationId
-  );
 
   const navigate = useNavigate();
 
   const {
     run: createNewConversation,
-    data,
+    data: createdConversationData,
     error: createConversationError,
+    isError: isCreateConversationError,
   } = useCreateConversation();
+
+  const {
+    data: existingConversationData,
+    run: fetchConversationData,
+    error: fetchConversationError,
+    isError: isFetchConversationError,
+  } = useConversation();
+
+  useEffect(() => {
+    if (paramConversationId) {
+      fetchConversationData(paramConversationId);
+    }
+  }, [fetchConversationData, paramConversationId]);
+
+  useEffect(() => {
+    if (existingConversationData && paramConversationId) {
+      setMessages(existingConversationData?.messages || []);
+    }
+  }, [existingConversationData, paramConversationId]);
 
   useToaster({
     messages: [
@@ -40,8 +54,13 @@ const Dashboard: React.FC = () => {
         type: "error",
       },
       {
-        condition: !!createConversationError,
+        condition: isCreateConversationError,
         message: createConversationError?.message,
+        type: "error",
+      },
+      {
+        condition: isFetchConversationError,
+        message: fetchConversationError?.message,
         type: "error",
       },
     ],
@@ -54,6 +73,9 @@ const Dashboard: React.FC = () => {
   const [assistantMessageId, setAssistantMessageId] = useState<number | null>(
     null
   );
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [pendingMessage, setPendingMessage] = useState<Message | null>(null);
 
@@ -94,7 +116,7 @@ const Dashboard: React.FC = () => {
 
     setAssistantMessageId(assistantMessage.id);
 
-    if (!conversationId) {
+    if (!paramConversationId) {
       createNewConversation(messageText);
 
       setPendingMessage(userMessage);
@@ -108,13 +130,13 @@ const Dashboard: React.FC = () => {
         { role: "user", content: messageText.trim() },
       ];
 
-      sendMessages(conversationId, chatMessages as Message[]);
+      sendMessages(paramConversationId, chatMessages as Message[]);
     }
 
     setMessageText("");
   };
 
-  // Accessibility enhancement
+  // Accessibility ++
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -123,9 +145,8 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    if (data && data.id && !conversationId) {
-      setConversationId(data.id);
-      navigate(`/dashboard/${data.id}`);
+    if (createdConversationData && createdConversationData.id) {
+      navigate(`/dashboard/${createdConversationData.id}`);
 
       if (pendingMessage) {
         const chatMessages = [
@@ -136,11 +157,17 @@ const Dashboard: React.FC = () => {
           })),
         ];
 
-        sendMessages(data.id, chatMessages as Message[]);
+        sendMessages(createdConversationData.id, chatMessages as Message[]);
         setPendingMessage(null);
       }
     }
-  }, [data, conversationId, messages, pendingMessage, navigate, sendMessages]);
+  }, [
+    createdConversationData,
+    messages,
+    pendingMessage,
+    navigate,
+    sendMessages,
+  ]);
 
   useEffect(() => {
     if (assistantMessageId !== null && response) {

@@ -1,25 +1,26 @@
 import { useCallback } from "react";
 import { useAsync } from "../utils/use-async";
+import { Conversation } from "../types/conversation.type";
 
-// normally I'd use react-query here
-// but I'm trying not to shoot to flies with a cannon
 export const useConversation = () => {
-  const data = useAsync<{ id: string }>();
+  const { run: runAsync, ...rest } = useAsync<Conversation | null>();
   
-  const run = useCallback(
-    (id: string) => {
-      const request = fetch(`http://localhost:5120/api/conversations/${id}`, {
+  const run = useCallback((id?: string) => {
+    if (!id) {
+      return runAsync(Promise.resolve(null));
+    }
+    
+    const request = fetch(`http://localhost:5120/api/conversations/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },
-    })
-    .then((res) => res.json());
+    }).then((res) => res.json());
     
-    data.run(request);
-  }, [data]);
+    return runAsync(request);
+  }, [runAsync]);
 
   return {
-    ...data,
+    ...rest,
     run
   };
 };
