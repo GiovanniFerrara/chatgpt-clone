@@ -7,6 +7,7 @@ interface UseAiChatCompletionReturn {
   error: string | null;
   isResponseComplete: boolean;
   sendMessages: (conversationId: string, messages: Message[]) => void;
+  abortGeneration: () => void;
 }
 
 export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
@@ -111,6 +112,15 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
     []
   );
 
+  const abortGeneration = useCallback(() => {
+    if (controllerRef.current) {
+      console.log("Aborting previous request... - 3");
+      controllerRef.current.abort();
+      setIsLoading(false);
+      setIsResponseComplete(true);
+    }
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -121,5 +131,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
     };
   }, []);
 
-  return { response, isLoading, error, isResponseComplete, sendMessages };
+
+
+  return { response, isLoading, error, isResponseComplete, sendMessages, abortGeneration };
 };

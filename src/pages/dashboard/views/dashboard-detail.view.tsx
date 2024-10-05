@@ -1,4 +1,10 @@
-import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import {
   Box,
   Container,
@@ -21,21 +27,26 @@ import useToaster from "../../../hooks/use-toaster.ts/use-toaster";
 
 const DashboardConversation: React.FC = () => {
   const { conversationId } = useParams<string>();
-  const { sendMessages, response, error, isLoading } = useAiChatCompletion();
+  const {
+    sendMessages,
+    response,
+    error,
+    isLoading: isCompletionLoading,
+    abortGeneration,
+  } = useAiChatCompletion();
   const {
     data: existingConversationData,
     run: fetchConversationData,
     error: fetchConversationError,
     isLoading: isFetchConversationLoading,
     isError: isFetchConversationError,
+    isSuccess: isFetchConversationSuccess,
+    reset: resetFetchConversation,
   } = useConversation();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [messageText, setMessageText] = useState("");
-  const [assistantMessageId, setAssistantMessageId] = useState<number | null>(
-    null
-  );
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -55,31 +66,47 @@ const DashboardConversation: React.FC = () => {
     ],
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (conversationId) {
       fetchConversationData(conversationId);
     }
-  }, [fetchConversationData, conversationId]);
+    return () => {
+      resetFetchConversation();
+      abortGeneration();
+      setMessages([]);
+    };
+  }, [
+    fetchConversationData,
+    conversationId,
+    resetFetchConversation,
+    abortGeneration,
+  ]);
 
   useEffect(() => {
-    if (existingConversationData && existingConversationData.messages) {
+    if (existingConversationData?.messages) {
       const lastMessage =
         existingConversationData.messages[
           existingConversationData.messages.length - 1
         ];
-      if (lastMessage && lastMessage.role === "user") {
-        console.log("lastMessage", lastMessage);
+
+      if (
+        lastMessage?.role === "user" &&
+        conversationId === existingConversationData.id &&
+        !isCompletionLoading
+      ) {
         setMessages(existingConversationData.messages);
         sendMessages(conversationId!, existingConversationData.messages);
       } else {
-        console.log(
-          "existingConversationData.messages",
-          existingConversationData.messages
-        );
         setMessages(existingConversationData.messages);
       }
     }
-  }, [conversationId, existingConversationData, sendMessages]);
+  }, [
+    isCompletionLoading,
+    conversationId,
+    existingConversationData,
+    isFetchConversationSuccess,
+    sendMessages,
+  ]);
 
   const handleDrawerToggle = () => {
     setIsDrawerOpen((prevIsOpenState) => !prevIsOpenState);
@@ -93,29 +120,16 @@ const DashboardConversation: React.FC = () => {
     if (messageText.trim() === "" || !conversationId) return;
 
     const userMessage: Message = {
-      id: messages.length + 1,
       role: "user",
       content: messageText.trim(),
     };
 
-    const assistantMessage: Message = {
-      id: messages.length + 2,
-      role: "assistant",
-      content: "",
-    };
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      userMessage,
-      assistantMessage,
-    ]);
-    setAssistantMessageId(assistantMessage.id);
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
 
     const chatMessages = [
       ...messages.map((msg) => ({
         role: msg.role,
         content: msg.content,
-        id: msg.id,
       })),
       { role: "user", content: messageText.trim() },
     ];
@@ -132,14 +146,27 @@ const DashboardConversation: React.FC = () => {
   };
 
   useEffect(() => {
-    if (assistantMessageId !== null && response) {
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) =>
-          msg.id === assistantMessageId ? { ...msg, content: response } : msg
-        )
-      );
+    if (response) {
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        const lastMessage = updatedMessages[updatedMessages.length - 1];
+
+        if (lastMessage && lastMessage.role === "assistant") {
+          updatedMessages[updatedMessages.length - 1] = {
+            ...lastMessage,
+            content: response,
+          };
+        } else {
+          updatedMessages.push({
+            role: "assistant",
+            content: response,
+          });
+        }
+
+        return updatedMessages;
+      });
     }
-  }, [response, assistantMessageId]);
+  }, [response]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -175,7 +202,7 @@ const DashboardConversation: React.FC = () => {
             maxWidth="md"
           >
             <MessageInputArea
-              disabled={isLoading}
+              disabled={isCompletionLoading}
               messageText={messageText}
               handleInputChange={handleInputChange}
               handleKeyPress={handleKeyPress}
