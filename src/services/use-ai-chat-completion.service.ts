@@ -19,6 +19,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const sendMessages = (conversationId:string, messages: Message[]) => {
     // Abort any ongoing request
     if (controllerRef.current) {
+      console.log("Aborting previous request... - 1");
       controllerRef.current.abort();
     }
 
@@ -112,6 +113,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   useEffect(() => {
     return () => {
       if (controllerRef.current) {
+        console.log("Aborting previous request... - 2");
         controllerRef.current.abort();
       }
     };

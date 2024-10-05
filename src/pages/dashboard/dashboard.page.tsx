@@ -95,7 +95,7 @@ const Dashboard: React.FC = () => {
     setAssistantMessageId(assistantMessage.id);
 
     if (!conversationId) {
-      createNewConversation();
+      createNewConversation(messageText);
 
       setPendingMessage(userMessage);
     } else {

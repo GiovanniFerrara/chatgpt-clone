@@ -1,8 +1,26 @@
-import { Box, IconButton, List, Switch, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  List,
+  Switch,
+  Typography,
+} from "@mui/material";
 import SidebarControl from "./sidebar-control";
 import CloseIcon from "@mui/icons-material/Close";
 import { Thread, ThreadButton, ThreadName } from "./thread-item.styles";
 import useLayout from "../../../hooks/use-layout.ts/use-layout";
+import { useConversations } from "../../../services/use-conversations.service";
+import useToaster from "../../../hooks/use-toaster.ts/use-toaster";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  format,
+  isSameMonth,
+  isThisMonth,
+  startOfMonth,
+  subMonths,
+} from "date-fns";
 
 interface DrawerContentProps {
   isMobile: boolean;
@@ -14,6 +32,56 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
   handleDrawerToggle,
 }) => {
   const { useDarkTheme, setUseDarkTheme } = useLayout();
+  const { data, isLoading, isError, error, run } = useConversations();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    run();
+  }, [run]);
+
+  useToaster({
+    messages: [
+      {
+        message: error?.message,
+        condition: isError,
+        type: "error",
+      },
+    ],
+  });
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  const handleConversationClick = (id: string) => {
+    navigate(`/dashboard/${id}`);
+  };
+
+  const groupedConversations = data?.reduce((acc, conversation) => {
+    const conversationDate = new Date(conversation.createdAt);
+
+    const isLastMonth = (date: Date) => {
+      const now = new Date();
+      const lastMonth = subMonths(now, 1);
+      return isSameMonth(date, lastMonth);
+    };
+
+    let period;
+
+    if (isThisMonth(conversationDate)) {
+      period = "This month";
+    } else if (isLastMonth(conversationDate)) {
+      period = "Last month";
+    } else {
+      period = format(startOfMonth(conversationDate), "MMM yyyy");
+    }
+
+    if (!acc[period]) {
+      acc[period] = [];
+    }
+    acc[period].push(conversation);
+    return acc;
+  }, {} as Record<string, typeof data>);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -26,20 +94,33 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
         </IconButton>
       )}
       <SidebarControl handleDrawerToggle={handleDrawerToggle} />
+
       <List sx={{ flexGrow: 1, overflowY: "auto" }}>
-        <Thread>
-          <Typography
-            variant="overline"
-            sx={{ color: "text.secondary", marginLeft: 2 }}
-          >
-            Today
-          </Typography>
-        </Thread>
-        <Thread disablePadding>
-          <ThreadButton>
-            <ThreadName>Chat 1</ThreadName>
-          </ThreadButton>
-        </Thread>
+        {groupedConversations &&
+          Object.entries(groupedConversations).map(
+            ([period, conversations]) => (
+              <Box key={period}>
+                <Typography
+                  variant="overline"
+                  sx={{ color: "text.secondary", marginLeft: 2 }}
+                >
+                  {period}
+                </Typography>
+                {conversations.map((conversation) => (
+                  <Thread key={conversation.id}>
+                    <ThreadButton
+                      onClick={() => handleConversationClick(conversation.id)}
+                    >
+                      <ThreadName>
+                        {conversation.title ||
+                          conversation.messages[0].content.slice(0, 25)}
+                      </ThreadName>
+                    </ThreadButton>
+                  </Thread>
+                ))}
+              </Box>
+            )
+          )}
       </List>
 
       <Box
