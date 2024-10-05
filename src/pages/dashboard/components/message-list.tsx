@@ -11,8 +11,9 @@ interface MessageListProps {
 const MessageList: React.FC<MessageListProps> = ({ messages }) => {
   return (
     <MessagesContainer>
-      {messages.map((message) => (
-        <MessageBubble key={message.id} message={message} />
+      {messages.map((message, index) => (
+        //in case I messed up message ids
+        <MessageBubble key={`${message.id} - ${index}`} message={message} />
       ))}
     </MessagesContainer>
   );

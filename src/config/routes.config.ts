@@ -24,13 +24,7 @@ export const routesConfig = {
   ],
   privateRoutes: [
     {
-      path: "/dashboard",
-      exact: true,
-      Component: Dashboard
-    },
-    {
-      path: "/dashboard/:conversationId",
-      exact: true,
+      path: "/dashboard*",
       Component: Dashboard
     },
   ]

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Message } from '../types/message';
 
 interface UseAiChatCompletionReturn {
@@ -16,7 +16,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
 
-  const sendMessages = (conversationId:string, messages: Message[]) => {
+  const sendMessages = useCallback((conversationId:string, messages: Message[]) => {
     // Abort any ongoing request
     if (controllerRef.current) {
       console.log("Aborting previous request... - 1");
@@ -107,7 +107,9 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
           setIsLoading(false);
         }
       });
-  };
+    },
+    []
+  );
 
   // Cleanup on unmount
   useEffect(() => {
