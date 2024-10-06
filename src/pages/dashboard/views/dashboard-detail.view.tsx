@@ -49,7 +49,7 @@ const DashboardConversation: React.FC = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  console.log(fetchConversationError);
   useToaster({
     messages: [
       {
@@ -58,7 +58,7 @@ const DashboardConversation: React.FC = () => {
         type: "error",
       },
       {
-        condition: isFetchConversationError,
+        condition: !!isFetchConversationError,
         message: fetchConversationError?.message,
         type: "error",
       },
@@ -155,8 +155,6 @@ const DashboardConversation: React.FC = () => {
       });
     }
   }, [adaptiveCardResponse, textResponse]);
-
-  console.log({ messages });
 
   return (
     <Box sx={{ display: "flex" }}>

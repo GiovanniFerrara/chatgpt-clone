@@ -22,7 +22,6 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const sendMessages = useCallback((conversationId:string, messages: Message[]) => {
     // Abort any ongoing request
     if (controllerRef.current) {
-      console.log("Aborting previous request... - 1");
       controllerRef.current.abort();
     }
 
@@ -82,10 +81,6 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
                             parsed.adaptiveCard || "";
                         setTextResponse((prev) => prev + text);
                         if(adaptiveResponseString) {
-                            console.log(
-                              "adaptiveResponseString",
-                              adaptiveResponseString
-                            );
                             setAdaptiveCardResponse(adaptiveResponseString);
                         }
                       } catch (e) {
@@ -128,7 +123,6 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
 
   const abortGeneration = useCallback(() => {
     if (controllerRef.current) {
-      console.log("Aborting previous request... - 3");
       controllerRef.current.abort();
       setIsLoading(false);
       setIsResponseComplete(true);
@@ -139,7 +133,6 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   useEffect(() => {
     return () => {
       if (controllerRef.current) {
-        console.log("Aborting previous request... - 2");
         controllerRef.current.abort();
       }
     };

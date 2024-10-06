@@ -91,7 +91,7 @@ const AdaptiveCardRenderer = ({ cardPayload }: { cardPayload: unknown }) => {
       adaptiveCard.parse(cardPayload);
 
       adaptiveCard.onExecuteAction = (action: Action) => {
-        console.log(action);
+        console.log("I wish I had the time to handle this", action);
       };
 
       const renderedCard = adaptiveCard.render();

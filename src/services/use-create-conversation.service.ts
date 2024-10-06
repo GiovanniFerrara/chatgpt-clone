@@ -14,7 +14,9 @@ export const useCreateConversation = () => {
         "Content-Type": "application/json",
       },
     })
-    .then((res) => res.json());
+    .then((res) => res.json()).catch((error) => {
+      throw new Error(error);
+    });;
     
     data.run(request);
   }, [data]);
