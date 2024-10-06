@@ -10,7 +10,7 @@ import { Message } from "../../../types/message";
 import LogoSmall from "../../../assets/logo-small.svg?react";
 
 interface MessageBubbleProps {
-  message: Message;
+  message: Omit<Message, "adaptiveCard">;
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {

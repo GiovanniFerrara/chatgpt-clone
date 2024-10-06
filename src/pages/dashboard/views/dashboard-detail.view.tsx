@@ -112,6 +112,7 @@ const DashboardConversation: React.FC = () => {
       const userMessage: Message = {
         role: "user",
         content: messageText.trim(),
+        adaptiveCard: null,
       };
 
       setMessages((prevMessages) => [...prevMessages, userMessage]);

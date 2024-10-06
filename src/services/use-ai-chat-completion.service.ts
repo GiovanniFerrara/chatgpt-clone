@@ -8,17 +8,16 @@ interface UseAiChatCompletionReturn {
   isResponseComplete: boolean;
   sendMessages: (conversationId: string, messages: Message[]) => void;
   abortGeneration: () => void;
-  adaptiveCardResponse: string;
+  adaptiveCardResponse: { body: string } | null;
 }
 
 export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const [textResponse, setTextResponse] = useState<string>('');
-  const [adaptiveCardResponse, setAdaptiveCardResponse] = useState<string>("");
+  const [adaptiveCardResponse, setAdaptiveCardResponse] = useState<{body: string}| null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
-
   const openaiToken = sessionStorage.getItem("openai-token");
 
   const sendMessages = useCallback((conversationId:string, messages: Message[]) => {
@@ -29,7 +28,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
 
     controllerRef.current = new AbortController();
     setTextResponse('');
-    setAdaptiveCardResponse("");
+    setAdaptiveCardResponse(null);
     setIsLoading(true);
     setError(null);
     setIsResponseComplete(false);
@@ -80,11 +79,11 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
 
                         const text = parsed.content || '';
 
-                          const adaptiveResponseString =
+                          const adaptiveResponse =
                             parsed.adaptiveCard || "";
                         setTextResponse((prev) => prev + text);
-                        if(adaptiveResponseString) {
-                            setAdaptiveCardResponse(adaptiveResponseString);
+                        if(adaptiveResponse) {
+                            setAdaptiveCardResponse(adaptiveResponse);
                         }
                       } catch (e) {
                         console.error('Error parsing JSON:', e);
