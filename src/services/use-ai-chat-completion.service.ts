@@ -121,7 +121,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
         }
       });
     },
-    []
+    [openaiToken]
   );
 
   const abortGeneration = useCallback(() => {
