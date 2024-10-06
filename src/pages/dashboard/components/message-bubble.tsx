@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
+import ReactMarkdown from "react-markdown";
 import {
   MessageContainer,
   MessageBubbleStyled,
@@ -25,7 +26,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               <LogoSmall height={theme.spacing(2)} width={theme.spacing(2)} />
             </LogoBox>
           )}
-          <Typography variant="body1">{message.content}</Typography>
+          <Box sx={{ flexGrow: 1 }}>
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </Box>
         </Box>
       </MessageBubbleStyled>
     </MessageContainer>

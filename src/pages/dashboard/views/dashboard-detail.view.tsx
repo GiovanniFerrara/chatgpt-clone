@@ -86,14 +86,11 @@ const DashboardConversation: React.FC = () => {
     if (!existingConversationData?.messages) {
       return;
     }
-
-    const lastMessage =
-      existingConversationData.messages[
-        existingConversationData.messages.length - 1
-      ];
+    const messagesLength = existingConversationData.messages.length;
+    const lastMessage = existingConversationData.messages[messagesLength - 1];
 
     if (
-      existingConversationData.messages.length === 1 &&
+      messagesLength === 1 &&
       lastMessage?.role === "user" &&
       conversationId === existingConversationData.id
     ) {
