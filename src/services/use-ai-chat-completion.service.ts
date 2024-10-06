@@ -2,16 +2,18 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Message } from '../types/message';
 
 interface UseAiChatCompletionReturn {
-  response: string;
+  textResponse: string;
   isLoading: boolean;
   error: string | null;
   isResponseComplete: boolean;
   sendMessages: (conversationId: string, messages: Message[]) => void;
   abortGeneration: () => void;
+  adaptiveCardResponse: string;
 }
 
 export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
-  const [response, setResponse] = useState<string>('');
+  const [textResponse, setTextResponse] = useState<string>('');
+  const [adaptiveCardResponse, setAdaptiveCardResponse] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false);
@@ -25,7 +27,8 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
     }
 
     controllerRef.current = new AbortController();
-    setResponse('');
+    setTextResponse('');
+    setAdaptiveCardResponse("");
     setIsLoading(true);
     setError(null);
     setIsResponseComplete(false);
@@ -71,9 +74,20 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
                         return;
                       }
                       try {
-                        const parsed = JSON.parse(data);
+                        const parsed: Message = JSON.parse(data);
+
                         const text = parsed.content || '';
-                        setResponse((prev) => prev + text);
+
+                          const adaptiveResponseString =
+                            parsed.adaptiveCard || "";
+                        setTextResponse((prev) => prev + text);
+                        if(adaptiveResponseString) {
+                            console.log(
+                              "adaptiveResponseString",
+                              adaptiveResponseString
+                            );
+                            setAdaptiveCardResponse(adaptiveResponseString);
+                        }
                       } catch (e) {
                         console.error('Error parsing JSON:', e);
                       }
@@ -131,7 +145,5 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
     };
   }, []);
 
-
-
-  return { response, isLoading, error, isResponseComplete, sendMessages, abortGeneration };
+  return { textResponse, adaptiveCardResponse, isLoading, error, isResponseComplete, sendMessages, abortGeneration };
 };

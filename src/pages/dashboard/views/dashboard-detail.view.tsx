@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 import {
   Box,
   Container,
@@ -21,8 +26,14 @@ import useToaster from "../../../hooks/use-toaster.ts/use-toaster";
 
 const DashboardConversation: React.FC = () => {
   const { conversationId } = useParams<string>();
-  const { sendMessages, response, error, isLoading, abortGeneration } =
-    useAiChatCompletion();
+  const {
+    sendMessages,
+    textResponse,
+    adaptiveCardResponse,
+    error,
+    isLoading,
+    abortGeneration,
+  } = useAiChatCompletion();
   const {
     data: existingConversationData,
     run: fetchConversationData,
@@ -33,6 +44,7 @@ const DashboardConversation: React.FC = () => {
   } = useConversation();
 
   const [messages, setMessages] = useState<Message[]>([]);
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const theme = useTheme();
@@ -96,29 +108,32 @@ const DashboardConversation: React.FC = () => {
     setIsDrawerOpen((prevIsOpenState) => !prevIsOpenState);
   };
 
-  const handleSendMessage = (messageText: string) => {
-    if (messageText.trim() === "" || !conversationId) return;
+  const handleSendMessage = useCallback(
+    (messageText: string) => {
+      if (messageText.trim() === "" || !conversationId) return;
 
-    const userMessage: Message = {
-      role: "user",
-      content: messageText.trim(),
-    };
+      const userMessage: Message = {
+        role: "user",
+        content: messageText.trim(),
+      };
 
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-    const chatMessages = [
-      ...messages.map((msg) => ({
-        role: msg.role,
-        content: msg.content,
-      })),
-      { role: "user", content: messageText.trim() },
-    ];
+      const chatMessages = [
+        ...messages.map((msg) => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+        { role: "user", content: messageText.trim() },
+      ];
 
-    sendMessages(conversationId, chatMessages as Message[]);
-  };
+      sendMessages(conversationId, chatMessages as Message[]);
+    },
+    [conversationId, messages, sendMessages]
+  );
 
   useEffect(() => {
-    if (response) {
+    if (textResponse || adaptiveCardResponse) {
       setMessages((prevMessages) => {
         const updatedMessages = [...prevMessages];
         const lastMessage = updatedMessages[updatedMessages.length - 1];
@@ -126,19 +141,23 @@ const DashboardConversation: React.FC = () => {
         if (lastMessage && lastMessage.role === "assistant") {
           updatedMessages[updatedMessages.length - 1] = {
             ...lastMessage,
-            content: response,
+            content: textResponse,
+            adaptiveCard: adaptiveCardResponse
+              ? adaptiveCardResponse
+              : lastMessage.adaptiveCard,
           };
         } else {
           updatedMessages.push({
             role: "assistant",
-            content: response,
+            content: textResponse,
+            adaptiveCard: adaptiveCardResponse,
           });
         }
 
         return updatedMessages;
       });
     }
-  }, [response]);
+  }, [adaptiveCardResponse, textResponse]);
 
   return (
     <Box sx={{ display: "flex" }}>
