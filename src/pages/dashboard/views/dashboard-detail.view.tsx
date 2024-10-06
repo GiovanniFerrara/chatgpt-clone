@@ -49,7 +49,7 @@ const DashboardConversation: React.FC = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  console.log(fetchConversationError);
+
   useToaster({
     messages: [
       {

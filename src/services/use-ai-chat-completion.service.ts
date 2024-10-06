@@ -19,6 +19,8 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false);
   const controllerRef = useRef<AbortController | null>(null);
 
+  const openaiToken = sessionStorage.getItem("openai-token");
+
   const sendMessages = useCallback((conversationId:string, messages: Message[]) => {
     // Abort any ongoing request
     if (controllerRef.current) {
@@ -36,6 +38,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+          "x-openai-token": openaiToken || '',
       },
       body: JSON.stringify({ messages, conversationId }),
       signal: controllerRef.current.signal,

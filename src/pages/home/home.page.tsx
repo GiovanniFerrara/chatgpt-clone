@@ -8,7 +8,7 @@ const Home: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    sessionStorage.setItem("api-key", apiKey);
+    sessionStorage.setItem("openai-token", apiKey);
     navigate("/dashboard");
   };
 
