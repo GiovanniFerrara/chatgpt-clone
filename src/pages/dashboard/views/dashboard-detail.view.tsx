@@ -159,6 +159,8 @@ const DashboardConversation: React.FC = () => {
     }
   }, [adaptiveCardResponse, textResponse]);
 
+  console.log({ messages });
+
   return (
     <Box sx={{ display: "flex" }}>
       {isMobile && (

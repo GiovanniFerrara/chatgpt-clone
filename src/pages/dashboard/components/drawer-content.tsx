@@ -14,13 +14,7 @@ import { useConversations } from "../../../services/use-conversations.service";
 import useToaster from "../../../hooks/use-toaster.ts/use-toaster";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  format,
-  isSameMonth,
-  isThisMonth,
-  startOfMonth,
-  subMonths,
-} from "date-fns";
+import { format, isToday, isYesterday, startOfDay } from "date-fns";
 
 interface DrawerContentProps {
   isMobile: boolean;
@@ -59,21 +53,14 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
 
   const groupedConversations = data?.reduce((acc, conversation) => {
     const conversationDate = new Date(conversation.createdAt);
-
-    const isLastMonth = (date: Date) => {
-      const now = new Date();
-      const lastMonth = subMonths(now, 1);
-      return isSameMonth(date, lastMonth);
-    };
-
     let period;
 
-    if (isThisMonth(conversationDate)) {
-      period = "This month";
-    } else if (isLastMonth(conversationDate)) {
-      period = "Last month";
+    if (isToday(conversationDate)) {
+      period = "Today";
+    } else if (isYesterday(conversationDate)) {
+      period = "Yesterday";
     } else {
-      period = format(startOfMonth(conversationDate), "MMM yyyy");
+      period = format(startOfDay(conversationDate), "MMMM d / yyyy");
     }
 
     if (!acc[period]) {
