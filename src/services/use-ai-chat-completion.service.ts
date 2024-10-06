@@ -8,12 +8,12 @@ interface UseAiChatCompletionReturn {
   isResponseComplete: boolean;
   sendMessages: (conversationId: string, messages: Message[]) => void;
   abortGeneration: () => void;
-  adaptiveCardResponse: { body: string } | null;
+  adaptiveCardResponse: { cardData: string } | null;
 }
 
 export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
   const [textResponse, setTextResponse] = useState<string>('');
-  const [adaptiveCardResponse, setAdaptiveCardResponse] = useState<{body: string}| null>(null);
+  const [adaptiveCardResponse, setAdaptiveCardResponse] = useState<{cardData: string}| null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isResponseComplete, setIsResponseComplete] = useState<boolean>(false);

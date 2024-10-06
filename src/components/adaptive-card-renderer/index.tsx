@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Action, AdaptiveCard, HostConfig } from "adaptivecards";
 import { Box, useTheme } from "@mui/material";
+import { toast } from "react-toastify";
 
 const AdaptiveCardRenderer = ({ cardPayload }: { cardPayload: unknown }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -88,10 +89,15 @@ const AdaptiveCardRenderer = ({ cardPayload }: { cardPayload: unknown }) => {
     if (cardRef.current) {
       const adaptiveCard = new AdaptiveCard();
       adaptiveCard.hostConfig = hostConfig;
+      console.log(cardPayload);
       adaptiveCard.parse(cardPayload);
 
       adaptiveCard.onExecuteAction = (action: Action) => {
         console.log("I wish I had the time to handle this", action);
+        toast.info("Great, this has been saved to our imaginary servers", {
+          autoClose: 5000,
+          theme: "light",
+        });
       };
 
       const renderedCard = adaptiveCard.render();

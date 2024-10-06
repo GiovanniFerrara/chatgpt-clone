@@ -4,7 +4,7 @@ import { MessagesContainer } from "./message-list.styles";
 import { Message } from "../../../types/message";
 import MessageBubble from "./message-bubble";
 import AdaptiveCardRenderer from "../../../components/adaptive-card-renderer";
-import { getCardsStructure } from "../../../utils/get-adaptive-card-structure";
+import { getCardStructure } from "../../../utils/get-adaptive-card-structure";
 
 interface MessageListProps {
   messages: Message[];
@@ -13,15 +13,19 @@ interface MessageListProps {
 const MessageList: React.FC<MessageListProps> = ({ messages }) => {
   return (
     <MessagesContainer>
-      {messages.map((message, index) => {
-        const cardsParsed = getCardsStructure(message?.adaptiveCard);
+      {messages.map((message, parentIndex) => {
+        const cardParsed = getCardStructure(message?.adaptiveCard);
 
         return (
-          <div key={index}>
-            <MessageBubble key={index} message={message} />
-            {cardsParsed?.map((cardParsed, index) => (
-              <AdaptiveCardRenderer key={index} cardPayload={cardParsed} />
-            ))}
+          <div key={"list" + parentIndex}>
+            <MessageBubble message={message} />
+            {Array.isArray(cardParsed) ? (
+              cardParsed.map((card, index) => (
+                <AdaptiveCardRenderer key={"card" + index} cardPayload={card} />
+              ))
+            ) : cardParsed ? (
+              <AdaptiveCardRenderer cardPayload={cardParsed} />
+            ) : null}
           </div>
         );
       })}
