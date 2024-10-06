@@ -5,8 +5,8 @@ import {
   MessageBubbleStyled,
   LogoBox,
 } from "./message-bubble.styles";
-import LogoSmall from "../../../assets/logo-small.svg?react";
 import { Message } from "../../../types/message";
+import LogoSmall from "../../../assets/logo-small.svg?react";
 
 interface MessageBubbleProps {
   message: Message;

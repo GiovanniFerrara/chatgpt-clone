@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 
 import AppBarComponent from "../components/app-bar";
 import Sidebar from "../components/sidebar";
-import MessageList from "../components/message-list";
 import MessageInputArea from "../components/message-input-area";
 import SidebarControl from "../components/sidebar-control";
 import { Main, HeaderSpacer, ScrollableArea } from "../dashboard.page.styles";
 import useToaster from "../../../hooks/use-toaster.ts/use-toaster";
 import { useCreateConversation } from "../../../services/use-create-conversation.service";
+import MessageTemplates from "../components/message-templates";
 
 const DashboardMain: React.FC = () => {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ const DashboardMain: React.FC = () => {
         <HeaderSpacer />
         <ScrollableArea>
           <Container maxWidth="md">
-            <MessageList messages={[]} />
+            <MessageTemplates submitTemplate={handleSendMessage} />
           </Container>
         </ScrollableArea>
         <Container sx={{ marginBottom: 2, position: "relative" }} maxWidth="md">
