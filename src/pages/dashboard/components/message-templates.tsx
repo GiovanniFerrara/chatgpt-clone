@@ -9,7 +9,7 @@ const MessageTemplates: React.FC<{
 }> = ({ submitTemplate }) => {
   const templates = [
     "Give me a code snippet to iterate through 5 reasons why I should hire Gian Marco",
-    "Create a form to understand why cheese am I, according to my personality",
+    "Create a form to understand which cheese am I, according to my personality",
     "Give a list 6 numbers that will make sure I win the lottery",
     "Design a dating app for introverted houseplants",
   ];
