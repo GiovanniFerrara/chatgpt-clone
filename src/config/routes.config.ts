@@ -24,7 +24,7 @@ export const routesConfig = {
   ],
   privateRoutes: [
     {
-      path: "/dashboard*",
+      path: "/dashboard/*",
       Component: Dashboard
     },
   ]

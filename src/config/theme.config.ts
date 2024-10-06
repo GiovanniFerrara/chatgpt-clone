@@ -108,22 +108,6 @@ const lightTheme = createTheme({
       contrastText: '#ffffff',
     },
   },
-  typography: {
-   
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-   
-  },
-  components: {
-   
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-        },
-      },
-    },
-   
-  },
 });
 
 export default lightTheme;

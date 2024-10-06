@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  ChangeEvent,
-  KeyboardEvent,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   Box,
   Container,
@@ -27,26 +21,19 @@ import useToaster from "../../../hooks/use-toaster.ts/use-toaster";
 
 const DashboardConversation: React.FC = () => {
   const { conversationId } = useParams<string>();
-  const {
-    sendMessages,
-    response,
-    error,
-    isLoading: isCompletionLoading,
-    abortGeneration,
-  } = useAiChatCompletion();
+  const { sendMessages, response, error, isLoading, abortGeneration } =
+    useAiChatCompletion();
   const {
     data: existingConversationData,
     run: fetchConversationData,
     error: fetchConversationError,
     isLoading: isFetchConversationLoading,
     isError: isFetchConversationError,
-    isSuccess: isFetchConversationSuccess,
     reset: resetFetchConversation,
   } = useConversation();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [messageText, setMessageText] = useState("");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -82,41 +69,34 @@ const DashboardConversation: React.FC = () => {
     abortGeneration,
   ]);
 
+  // stores messages from existing conversations and triggers a ai completion when starting with the first user message
   useEffect(() => {
-    if (existingConversationData?.messages) {
-      const lastMessage =
-        existingConversationData.messages[
-          existingConversationData.messages.length - 1
-        ];
-
-      if (
-        lastMessage?.role === "user" &&
-        conversationId === existingConversationData.id &&
-        !isCompletionLoading
-      ) {
-        setMessages(existingConversationData.messages);
-        sendMessages(conversationId!, existingConversationData.messages);
-      } else {
-        setMessages(existingConversationData.messages);
-      }
+    if (!existingConversationData?.messages) {
+      return;
     }
-  }, [
-    isCompletionLoading,
-    conversationId,
-    existingConversationData,
-    isFetchConversationSuccess,
-    sendMessages,
-  ]);
+
+    const lastMessage =
+      existingConversationData.messages[
+        existingConversationData.messages.length - 1
+      ];
+
+    if (
+      existingConversationData.messages.length === 1 &&
+      lastMessage?.role === "user" &&
+      conversationId === existingConversationData.id
+    ) {
+      setMessages(existingConversationData.messages);
+      sendMessages(conversationId!, existingConversationData.messages);
+    } else {
+      setMessages(existingConversationData.messages);
+    }
+  }, [conversationId, existingConversationData, sendMessages]);
 
   const handleDrawerToggle = () => {
     setIsDrawerOpen((prevIsOpenState) => !prevIsOpenState);
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setMessageText(e.target.value);
-  };
-
-  const handleSendMessage = () => {
+  const handleSendMessage = (messageText: string) => {
     if (messageText.trim() === "" || !conversationId) return;
 
     const userMessage: Message = {
@@ -135,14 +115,6 @@ const DashboardConversation: React.FC = () => {
     ];
 
     sendMessages(conversationId, chatMessages as Message[]);
-    setMessageText("");
-  };
-
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
   };
 
   useEffect(() => {
@@ -202,11 +174,8 @@ const DashboardConversation: React.FC = () => {
             maxWidth="md"
           >
             <MessageInputArea
-              disabled={isCompletionLoading}
-              messageText={messageText}
-              handleInputChange={handleInputChange}
-              handleKeyPress={handleKeyPress}
-              handleSendMessage={handleSendMessage}
+              onSubmit={handleSendMessage}
+              disabled={isLoading}
             />
           </Container>
         </Main>

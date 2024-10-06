@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Container, useTheme, useMediaQuery } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +14,6 @@ import { useCreateConversation } from "../../../services/use-create-conversation
 const DashboardMain: React.FC = () => {
   const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [messageText, setMessageText] = useState("");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -48,23 +47,12 @@ const DashboardMain: React.FC = () => {
     setIsDrawerOpen((prevIsOpenState) => !prevIsOpenState);
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setMessageText(e.target.value);
-  };
-
-  const handleSendMessage = () => {
-    if (messageText.trim() === "") return;
-
-    createNewConversation(messageText);
-
-    setMessageText("");
-  };
-
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
+  const handleSendMessage = (textMessage: string) => {
+    if (textMessage.trim() === "") {
+      return;
     }
+
+    createNewConversation(textMessage);
   };
 
   return (
@@ -96,10 +84,7 @@ const DashboardMain: React.FC = () => {
         <Container sx={{ marginBottom: 2, position: "relative" }} maxWidth="md">
           <MessageInputArea
             disabled={isCreateConversationLoading}
-            messageText={messageText}
-            handleInputChange={handleInputChange}
-            handleKeyPress={handleKeyPress}
-            handleSendMessage={handleSendMessage}
+            onSubmit={handleSendMessage}
           />
         </Container>
       </Main>

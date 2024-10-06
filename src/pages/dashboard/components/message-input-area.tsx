@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from "react";
+import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import {
   InputArea,
   MessageInput,
@@ -7,20 +7,33 @@ import {
 import ArrowUp from "@mui/icons-material/ArrowUpward";
 
 interface MessageInputAreaProps {
-  messageText: string;
-  handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleKeyPress: (e: KeyboardEvent<HTMLInputElement>) => void;
-  handleSendMessage: () => void;
+  onSubmit: (messageText: string) => void;
   disabled: boolean;
 }
 
 const MessageInputArea: React.FC<MessageInputAreaProps> = ({
-  messageText,
-  handleInputChange,
-  handleKeyPress,
-  handleSendMessage,
   disabled,
+  onSubmit,
 }) => {
+  const [messageText, setMessageText] = useState("");
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setMessageText(e.target.value);
+    handleInputChange(e);
+  };
+
+  const handleSendMessage = () => {
+    onSubmit(messageText);
+    setMessageText("");
+  };
+
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      onSubmit(messageText);
+      setMessageText("");
+    }
+  };
+
   return (
     <>
       <InputArea>
@@ -28,7 +41,7 @@ const MessageInputArea: React.FC<MessageInputAreaProps> = ({
           placeholder="Type your message..."
           value={messageText}
           onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           multiline
           inputProps={{ "aria-label": "message input" }}
         />
