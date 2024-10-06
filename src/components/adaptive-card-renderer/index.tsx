@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Action, AdaptiveCard, HostConfig } from "adaptivecards";
-import { useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 
 const AdaptiveCardRenderer = ({ cardPayload }: { cardPayload: unknown }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -100,7 +100,7 @@ const AdaptiveCardRenderer = ({ cardPayload }: { cardPayload: unknown }) => {
     }
   }, [cardPayload, hostConfig, theme]);
 
-  return <div ref={cardRef}></div>;
+  return <Box sx={{ marginBottom: 3 }} ref={cardRef}></Box>;
 };
 
 export default AdaptiveCardRenderer;

@@ -5,6 +5,7 @@ import {
   SendButton,
 } from "./message-input-area.styles";
 import ArrowUp from "@mui/icons-material/ArrowUpward";
+import { CircularProgress } from "@mui/material";
 
 interface MessageInputAreaProps {
   onSubmit: (messageText: string) => void;
@@ -52,7 +53,7 @@ const MessageInputArea: React.FC<MessageInputAreaProps> = ({
         onClick={handleSendMessage}
         aria-label="send message"
       >
-        <ArrowUp color={"action"} />
+        {disabled ? <CircularProgress /> : <ArrowUp color={"action"} />}
       </SendButton>
     </>
   );
