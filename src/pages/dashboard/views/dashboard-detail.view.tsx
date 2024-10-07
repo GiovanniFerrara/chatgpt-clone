@@ -23,6 +23,8 @@ import { Message } from "../../../types/message";
 import { useAiChatCompletion } from "../../../services/use-ai-chat-completion.service";
 import { useConversation } from "../../../services/use-conversation.service";
 import useToaster from "../../../hooks/use-toaster.ts/use-toaster";
+import DashboardFallback from "./dashboard-empty.error-fallback";
+import { ErrorBoundary } from "react-error-boundary";
 
 const DashboardConversation: React.FC = () => {
   const { conversationId } = useParams<string>();
@@ -158,46 +160,51 @@ const DashboardConversation: React.FC = () => {
   }, [adaptiveCardResponse, textResponse]);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      {isMobile && (
-        <AppBarComponent
+    <ErrorBoundary
+      resetKeys={[existingConversationData?.id]}
+      FallbackComponent={DashboardFallback}
+    >
+      <Box sx={{ display: "flex" }}>
+        {isMobile && (
+          <AppBarComponent
+            isDrawerOpen={isDrawerOpen}
+            handleDrawerToggle={handleDrawerToggle}
+          />
+        )}
+
+        <Sidebar
+          isMobile={isMobile}
           isDrawerOpen={isDrawerOpen}
           handleDrawerToggle={handleDrawerToggle}
         />
-      )}
 
-      <Sidebar
-        isMobile={isMobile}
-        isDrawerOpen={isDrawerOpen}
-        handleDrawerToggle={handleDrawerToggle}
-      />
+        {isDrawerOpen && (
+          <SidebarControl handleDrawerToggle={handleDrawerToggle} tighten />
+        )}
 
-      {isDrawerOpen && (
-        <SidebarControl handleDrawerToggle={handleDrawerToggle} tighten />
-      )}
-
-      {isFetchConversationLoading ? (
-        <CircularProgress />
-      ) : (
-        <Main>
-          <HeaderSpacer />
-          <ScrollableArea>
-            <Container maxWidth="md">
-              <MessageList messages={messages} />
+        {isFetchConversationLoading ? (
+          <CircularProgress />
+        ) : (
+          <Main>
+            <HeaderSpacer />
+            <ScrollableArea>
+              <Container maxWidth="md">
+                <MessageList messages={messages} />
+              </Container>
+            </ScrollableArea>
+            <Container
+              sx={{ marginBottom: 2, position: "relative" }}
+              maxWidth="md"
+            >
+              <MessageInputArea
+                onSubmit={handleSendMessage}
+                disabled={isLoading}
+              />
             </Container>
-          </ScrollableArea>
-          <Container
-            sx={{ marginBottom: 2, position: "relative" }}
-            maxWidth="md"
-          >
-            <MessageInputArea
-              onSubmit={handleSendMessage}
-              disabled={isLoading}
-            />
-          </Container>
-        </Main>
-      )}
-    </Box>
+          </Main>
+        )}
+      </Box>
+    </ErrorBoundary>
   );
 };
 

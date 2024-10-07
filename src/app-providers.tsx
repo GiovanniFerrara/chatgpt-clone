@@ -7,6 +7,10 @@ import LayoutProvider from "./context/layout-context/layout";
 import useLayout from "./hooks/use-layout.ts/use-layout";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import { ErrorBoundary } from "react-error-boundary";
+import FullPageFallback from "./components/error-fallback/full-page-fallback";
+import { Fragment } from "react/jsx-runtime";
+import { useState } from "react";
 
 interface Props {
   children: React.ReactNode;
@@ -15,12 +19,23 @@ interface Props {
 // just a trick to be able to use the theme provider inside the layout context
 const NestedAppProviders = ({ children }: Props) => {
   const { useDarkTheme } = useLayout();
+  const [currentKey, setCurrentKey] = useState(new Date().getTime());
+
+  const handleResetApp = () => {
+    setCurrentKey(new Date().getTime());
+  };
+
   return (
-    <ThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
-      <CssBaseline />
-      <ToastContainer />
-      {children}
-    </ThemeProvider>
+    <ErrorBoundary
+      FallbackComponent={FullPageFallback}
+      onReset={handleResetApp}
+    >
+      <ThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
+        <CssBaseline />
+        <ToastContainer />
+        <Fragment key={currentKey}>{children}</Fragment>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 
