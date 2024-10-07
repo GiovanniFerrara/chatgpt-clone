@@ -8,6 +8,7 @@ import {
 } from "./message-bubble.styles";
 import { Message } from "../../../types/message";
 import LogoSmall from "../../../assets/logo-small.svg?react";
+import { CodeBlock } from "./code-block";
 
 interface MessageBubbleProps {
   message: Omit<Message, "adaptiveCard">;
@@ -27,7 +28,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             </LogoBox>
           )}
           <Box sx={{ flexGrow: 1 }}>
-            <ReactMarkdown>{message.content}</ReactMarkdown>
+            <ReactMarkdown
+              components={{
+                code: ({ className, children, ...props }) => (
+                  <CodeBlock className={className} {...props}>
+                    {children}
+                  </CodeBlock>
+                ),
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
           </Box>
         </Box>
       </MessageBubbleStyled>
