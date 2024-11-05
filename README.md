@@ -60,18 +60,6 @@ The backend provides:
 - Enter your OpenAI API key on the home page
 - Start chatting with the AI in the dashboard
 
-## Project Structure
-
-src/
-├── components/        # Reusable UI components
-├── pages/            # Page components
-│   ├── home/         # Landing page with API key input
-│   └── dashboard/    # Main chat interface
-├── services/         # API integration services
-├── types/           # TypeScript type definitions
-└── utils/           # Helper functions
-
-
 ## Security
 - API keys are stored only in session storage
 - No sensitive data is persisted on the server
