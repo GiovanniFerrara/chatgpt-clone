@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useCallback,
+  useRef,
 } from "react";
 import {
   Box,
@@ -83,6 +84,13 @@ const DashboardConversation: React.FC = () => {
     abortGeneration,
   ]);
 
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [messages]);
   // stores messages from existing conversations and triggers a ai completion when starting with the first user message
   useEffect(() => {
     if (!existingConversationData?.messages) {
@@ -187,7 +195,7 @@ const DashboardConversation: React.FC = () => {
         ) : (
           <Main>
             <HeaderSpacer />
-            <ScrollableArea>
+            <ScrollableArea ref={scrollAreaRef}>
               <Container maxWidth="md">
                 <MessageList messages={messages} />
               </Container>
