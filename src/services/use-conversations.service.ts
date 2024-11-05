@@ -8,7 +8,7 @@ export const useConversations = () => {
   const { run: runAsync, ...rest } = useAsync<Conversation[]>();
 
   const run = useCallback(() => {
-    const request = fetch(`http://localhost:5120/api/conversations`, {
+    const request = fetch(`${import.meta.env.VITE_BACKEND_URI}/api/conversations`, {
       headers: {
         "Content-Type": "application/json",
       },

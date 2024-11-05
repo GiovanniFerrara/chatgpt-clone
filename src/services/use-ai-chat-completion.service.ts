@@ -33,7 +33,7 @@ export const useAiChatCompletion = (): UseAiChatCompletionReturn => {
     setError(null);
     setIsResponseComplete(false);
 
-    fetch('http://localhost:5120/api/chat-completion-stream', {
+    fetch(`${import.meta.env.VITE_BACKEND_URI}/api/chat-completion-stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

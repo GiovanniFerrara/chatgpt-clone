@@ -11,7 +11,7 @@ export const useConversation = () => {
         return runAsync(Promise.resolve(null));
       }
 
-      const request = fetch(`http://localhost:5120/api/conversations/${id}`, {
+      const request = fetch(`${import.meta.env.VITE_BACKEND_URI}/api/conversations/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },

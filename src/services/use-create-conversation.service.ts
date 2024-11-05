@@ -10,7 +10,7 @@ export const useCreateConversation = () => {
     (userMessage: string) => {
       const openaiToken = sessionStorage.getItem("openai-token");
 
-      const request = fetch("http://localhost:5120/api/conversations", {
+      const request = fetch(`${import.meta.env.VITE_BACKEND_URI}/api/conversations`, {
         method: "POST",
         body: JSON.stringify({ userMessage }),
         headers: {
