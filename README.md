@@ -1,50 +1,102 @@
-# React + TypeScript + Vite
+# ChatGPT clone
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A sleek and intuitive React-based frontend for interacting with GPT-4, featuring real-time streaming responses and conversation management.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔐 Secure API key management using session storage
+- 💬 Real-time streaming chat interface
+- 📱 Responsive Material-UI design
+- 🗂️ Conversation history management
+- 🌐 Integration with GPT-4 streaming backend
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React 18
+- TypeScript
+- Vite
+- Material-UI (MUI)
+- React Router
+- ESLint
 
-- Configure the top-level `parserOptions` property like this:
+## Quick Start
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. Clone the repository:
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+git clone https://github.com/yourusername/ferrara-gpt-frontend.git
+cd ferrara-gpt-frontend
+npm install
+npm run dev
+# Backend Setup & Requirements
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+The application requires the GPT-4 Streaming Backend to be running. You can find it at https://github.com/GiovanniFerrara/chatgpt4-streaming-backend
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Setup Instructions
+
+1. Clone the backend repository
+2. Install dependencies with `npm install`
+
+3. Start the server with `npm run dev`
+
+## Backend Features
+
+The backend provides:
+
+- Streaming chat completions using OpenAI's GPT-4
+- Conversation management with persistent storage
+- RESTful API endpoints
+- Event-stream based real-time responses
+
+### Key Capabilities
+
+- Automatic conversation title generation
+- Message history persistence
+- Real-time streaming responses
+- Error handling and validation
+- Chronological conversation sorting
+
+## Usage
+- Visit the application at http://localhost:5173
+- Enter your OpenAI API key on the home page
+- Start chatting with the AI in the dashboard
+
+## Project Structure
+
+src/
+├── components/        # Reusable UI components
+├── pages/            # Page components
+│   ├── home/         # Landing page with API key input
+│   └── dashboard/    # Main chat interface
+├── services/         # API integration services
+├── types/           # TypeScript type definitions
+└── utils/           # Helper functions
+
+
+## Security
+- API keys are stored only in session storage
+- No sensitive data is persisted on the server
+- Secure communication with backend API
+
+
+# Building for Production
+npm run build
+
+# Linting
+npm run lint
+
+
+## Contributing
+1. Fork the repository
+2. Create your feature branch (git checkout -b feature/amazing-feature)
+3. Commit your changes (git commit -m 'Add some amazing feature')
+4. Push to the branch (git push origin feature/amazing-feature)
+5. Open a Pull Request
+
+## Backend Integration
+This frontend is designed to work with the GPT-4 Streaming Backend. Make sure to set up the backend service for full functionality.
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Contact
+Gian Marco Ferrara - gianmarco.ferrara@gmail.com
