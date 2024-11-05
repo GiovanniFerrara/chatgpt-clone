@@ -29,6 +29,7 @@ const MessageInputArea: React.FC<MessageInputAreaProps> = ({
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       onSubmit(messageText);
       setMessageText("");
     }
